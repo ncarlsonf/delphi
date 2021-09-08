@@ -3,46 +3,47 @@ unit uRotacao;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Samples.Spin;
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+    System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+    Vcl.StdCtrls, Vcl.Samples.Spin;
 
 type
-  TfrmRotacao = class(TForm)
-    ed1: TEdit;
-    ed2: TEdit;
-    ed3: TEdit;
-    btnCodificar: TButton;
-    btnDecodificar: TButton;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    seDeslocamento: TSpinEdit;
-    cbDirecao: TComboBox;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    edByte: TEdit;
-    edBin: TEdit;
-    btnByteToBin: TButton;
-    btnBinToByte: TButton;
-    Label7: TLabel;
-    Label8: TLabel;
-    procedure btnCodificarClick(Sender: TObject);
-    procedure btnDecodificarClick(Sender: TObject);
-    procedure btnByteToBinClick(Sender: TObject);
-    procedure btnBinToByteClick(Sender: TObject);
-    procedure edByteKeyPress(Sender: TObject; var Key: Char);
-    procedure edByteExit(Sender: TObject);
-    procedure edBinKeyPress(Sender: TObject; var Key: Char);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
-  end;
+    TfrmRotacao = class(TForm)
+        ed1: TEdit;
+        ed2: TEdit;
+        ed3: TEdit;
+        btnCodificar: TButton;
+        btnDecodificar: TButton;
+        Label1: TLabel;
+        Label2: TLabel;
+        Label3: TLabel;
+        seDeslocamento: TSpinEdit;
+        cbDirecao: TComboBox;
+        Label4: TLabel;
+        Label5: TLabel;
+        Label6: TLabel;
+        edByte: TEdit;
+        edBin: TEdit;
+        btnByteToBin: TButton;
+        btnBinToByte: TButton;
+        Label7: TLabel;
+        Label8: TLabel;
+        procedure btnCodificarClick(Sender: TObject);
+        procedure btnDecodificarClick(Sender: TObject);
+        procedure btnByteToBinClick(Sender: TObject);
+        procedure btnBinToByteClick(Sender: TObject);
+        procedure edByteKeyPress(Sender: TObject; var Key: Char);
+        procedure edByteExit(Sender: TObject);
+        procedure edBinKeyPress(Sender: TObject; var Key: Char);
+    private
+        { Private declarations }
+    public
+        { Public declarations }
+    end;
 
 var
-  frmRotacao: TfrmRotacao;
-  textoCodificado: AnsiString;
+    frmRotacao: TfrmRotacao;
+    textoCodificado: AnsiString;
 
 implementation
 
@@ -66,15 +67,7 @@ begin
     b7 := (b and 64) shr 6;  // 01000000
     b8 := (b and 128) shr 7; // 10000000
 
-    Result :=
-        IntToStr(b8)
-        +IntToStr(b7)
-        +IntToStr(b6)
-        +IntToStr(b5)
-        +IntToStr(b4)
-        +IntToStr(b3)
-        +IntToStr(b2)
-        +IntToStr(b1);
+    Result := IntToStr(b8) + IntToStr(b7) + IntToStr(b6) + IntToStr(b5) + IntToStr(b4) + IntToStr(b3) + IntToStr(b2) + IntToStr(b1);
 end;
 
 // convertendo um número binário representado por uma string para um byte
@@ -109,9 +102,7 @@ end;
 // obter um número binário representado por uma string a partir de um byte passado em edByte
 procedure TfrmRotacao.btnByteToBinClick(Sender: TObject);
 begin
-    if (Trim(edByte.Text) <> '')
-        and(StrToInt(edByte.Text) >= 0)
-        and (StrToInt(edByte.Text) <= 255) then
+    if (Trim(edByte.Text) <> '') and (StrToInt(edByte.Text) >= 0) and (StrToInt(edByte.Text) <= 255) then
     begin
         edBin.Text := ByteToBin(StrToInt(edByte.Text));
     end;
@@ -180,7 +171,7 @@ end;
 
 procedure TfrmRotacao.edBinKeyPress(Sender: TObject; var Key: Char);
 begin
-    if not(Key in ['0'..'1']) then
+    if not (Key in ['0'..'1']) then
         Key := #0;
 end;
 
@@ -203,8 +194,9 @@ end;
 
 procedure TfrmRotacao.edByteKeyPress(Sender: TObject; var Key: Char);
 begin
-    if not(Key in ['0'..'9']) then
+    if not (Key in ['0'..'9']) then
         Key := #0;
 end;
 
 end.
+
