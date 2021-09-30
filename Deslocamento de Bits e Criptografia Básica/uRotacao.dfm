@@ -1,7 +1,7 @@
 object frmRotacao: TfrmRotacao
   Left = 0
   Top = 0
-  Caption = 'Rota'#231#227'o de Bits'
+  Caption = 'Criptografia, rota'#231#227'o de Bits e outras opera'#231#245'es'
   ClientHeight = 422
   ClientWidth = 493
   Color = clBtnFace
