@@ -28,7 +28,12 @@ type
         function ToString(): String;
     end;
 
-    TContatoList = TList<TContato>;
+    TContatoList = class(TList<TContato>)
+    public
+        // Obtém um índice
+        function IndexOf(Nome: String): Integer; overload;
+        function GetContato(Nome: String): TContato;
+    end;
 
 var
     fmMain: TfmMain;
@@ -65,6 +70,40 @@ begin
     Result := 'Nome="' + Nome + '";Fone="' + Fone + '";Email="' + Email + '"';
 end;
 
+function TContatoList.IndexOf(Nome: String): Integer;
+var
+    i: Integer;
+    contato: TContato;
+begin
+    Result := -1;
+    for i := 0 to Self.Count - 1 do
+    begin
+        contato := Self.Items[i];
+        if UpperCase(Trim(contato.Nome)) = UpperCase(Trim(Nome)) then
+        begin
+            Result := i;
+            Exit;
+        end;
+    end;
+    MessageDlg('Contato "' + Nome + '" não localizado.', mtWarning, [mbOk], 0);
+end;
+
+function TContatoList.GetContato(Nome: String): TContato;
+var
+    contato: TContato;
+begin
+    Result := nil;
+    for contato in Self do
+    begin
+        if UpperCase(Trim(contato.Nome)) = UpperCase(Trim(Nome)) then
+        begin
+            Result := contato;
+            Exit;
+        end;
+    end;
+    MessageDlg('Contato "' + Nome + '" não localizado.', mtWarning, [mbOk], 0);
+end;
+
 procedure TfmMain.Button1Click(Sender: TObject);
 begin
     Self.Close();
@@ -73,7 +112,7 @@ end;
 procedure TfmMain.FormCreate(Sender: TObject);
 var
     contato: TContato;
-    i: Integer;
+    i, idx: Integer;
     tamanhoInicial: Integer;
     str: String;
     compararPorTamanho, compararPorOrdemAlfabetica: IComparer<TContato>;
@@ -155,6 +194,27 @@ begin
     contatoList.Sort(TComparer<TContato>.Construct(compararPorOrdemAlfabeticaDoEmail));
     for i := 0 to contatoList.Count - 1 do
         Memo1.Lines.Add(contatoList.Items[i].ToString());
+
+    Memo1.Lines.Add('');
+    idx := contatoList.IndexOf('Nelson Filho');
+    if idx <> -1 then
+        Memo1.Lines.Add('Contato "Nelson Filho" localizado no índice "' + IntToStr(idx) + '"');
+
+    Memo1.Lines.Add('');
+    contato := contatoList.GetContato('Francisco');
+    if contato <> nil then
+    begin
+        Memo1.Lines.Add('Contato "Francisco" localizado');
+        Memo1.Lines.Add(contato.ToString());
+    end;
+
+    Memo1.Lines.Add('');
+    contato := contatoList.GetContato('Antonio de Pádua');
+    if contato <> nil then
+    begin
+        Memo1.Lines.Add('Contato "Antonio de Pádua" localizado');
+        Memo1.Lines.Add(contato.ToString());
+    end;
 
 end;
 
