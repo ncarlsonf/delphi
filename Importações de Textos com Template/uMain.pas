@@ -3,52 +3,54 @@ unit uMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, JvMemoryDataset, Vcl.Grids,
-  Vcl.DBGrids, Vcl.StdCtrls, Vcl.ExtDlgs;
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+    System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB,
+    JvMemoryDataset, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, Vcl.ExtDlgs;
 
 type
-  TfmMain = class(TForm)
-    memData: TMemo;
-    grid: TDBGrid;
-    ds: TDataSource;
-    tb: TJvMemoryData;
-    tbCODIGO: TStringField;
-    tbPRECO: TFloatField;
-    tbQTD: TFloatField;
-    btnLerEProcessar: TButton;
-    GroupBox1: TGroupBox;
-    Label1: TLabel;
-    Label5: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    chkWithHeader: TCheckBox;
-    edDelim: TEdit;
-    Edit2: TEdit;
-    edFormato: TEdit;
-    cbSepNum: TComboBox;
-    cbFormatos: TComboBox;
-    Label4: TLabel;
-    btnAplicar: TButton;
-    opendialog: TOpenTextFileDialog;
-    btnLer: TButton;
-    btnProcessar: TButton;
-    lbRegistrosLidos: TLabel;
-    procedure btnLerEProcessarClick(Sender: TObject);
-    procedure btnAplicarClick(Sender: TObject);
-    procedure btnLerClick(Sender: TObject);
-    procedure btnProcessarClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
-    procedure LoadFormat();
-    procedure Process();
-  end;
+    TfmMain = class(TForm)
+        memData: TMemo;
+        grid: TDBGrid;
+        ds: TDataSource;
+        tb: TJvMemoryData;
+        tbCODIGO: TStringField;
+        tbPRECO: TFloatField;
+        tbQTD: TFloatField;
+        btnLerEProcessar: TButton;
+        GroupBox1: TGroupBox;
+        Label1: TLabel;
+        Label5: TLabel;
+        Label2: TLabel;
+        Label3: TLabel;
+        chkWithHeader: TCheckBox;
+        edDelim: TEdit;
+        edFormatDateTime: TEdit;
+        edFormato: TEdit;
+        cbSepNum: TComboBox;
+        cbFormatos: TComboBox;
+        Label4: TLabel;
+        btnAplicar: TButton;
+        opendialog: TOpenTextFileDialog;
+        btnLer: TButton;
+        btnProcessar: TButton;
+        lbRegistrosLidos: TLabel;
+        procedure btnLerEProcessarClick(Sender: TObject);
+        procedure btnAplicarClick(Sender: TObject);
+        procedure btnLerClick(Sender: TObject);
+        procedure btnProcessarClick(Sender: TObject);
+        procedure FormCreate(Sender: TObject);
+        procedure FormDestroy(Sender: TObject);
+    private
+        { Private declarations }
+    public
+        { Public declarations }
+        listFormatos: TStringList;
+        procedure LoadFormat();
+        procedure Process();
+    end;
 
 var
-  fmMain: TfmMain;
+    fmMain: TfmMain;
 
 implementation
 
@@ -58,9 +60,13 @@ uses
     TkHelpers, uFuncoes;
 
 type
-    TCampo=record
-        Nome: String;
-        Tipo: String;
+    TStringWrapper = class
+        Txt: string;
+    end;
+
+    TCampo = record
+        Nome: string;
+        Tipo: string;
         Tamanho: Integer;
         Decimais: Integer;
     end;
@@ -73,7 +79,7 @@ var
 procedure TfmMain.LoadFormat();
 var
     i, qtdParts: Integer;
-    aStr, parts: TArray<String>;
+    aStr, parts: TArray<string>;
 begin
     valido := False;
     aStr := ('' + edFormato.Text).Split([',']);
@@ -90,12 +96,12 @@ begin
                 MessageDlg('Quantidade de partes menor que 3 em "' + edFormato.Text + '".', mtError, [mbOk], 0);
                 Exit;
             end;
-            if (not(StrInCi(parts[0], ['CODIGO','QTD','PRECO']))) then
+            if (not (StrInCi(parts[0], ['CODIGO', 'QTD', 'PRECO']))) then
             begin
                 MessageDlg('Campo não permitido "' + parts[0] + '".'#13'Utilizar: CODIGO, QTD, PRECO', mtError, [mbOk], 0);
                 Exit;
             end;
-            if (not(StrInCi(parts[1], ['TEXTO','NUMERO']))) then
+            if (not (StrInCi(parts[1], ['TEXTO', 'NUMERO']))) then
             begin
                 MessageDlg('Tipo não permitido "' + parts[1] + '".'#13'Utilizar: TEXTO, NUMERO', mtError, [mbOk], 0);
                 Exit;
@@ -120,19 +126,19 @@ end;
 procedure TfmMain.Process();
 var
     i, j, ini: Integer;
-    txt, delim: String;
+    txt, delim: string;
     qtdParts: Integer;
-    parts: TArray<String>;
+    parts: TArray<string>;
     sepNum: Char;
-    numero, decimal: String;
+    numero, decimal: string;
     valor: Double;
-
 begin
     LoadFormat();
     if not valido then
         Exit;
 
-    if tb.Active then tb.Close();
+    if tb.Active then
+        tb.Close();
     tb.Open();
     ini := 0;
     if chkWithHeader.Checked then
@@ -173,7 +179,7 @@ begin
                     end
                     else if StrEqCi(campos[j].Tipo, 'NUMERO') then
                     begin
-                        if Pos(''+sepNum, parts[j]) > 0 then
+                        if Pos('' + sepNum, parts[j]) > 0 then
                         begin
                             numero := parts[j].Split([sepNum])[0];
                             decimal := parts[j].Split([sepNum])[1];
@@ -198,25 +204,11 @@ begin
         tb.First();
         lbRegistrosLidos.Caption := 'Registros Lidos: ' + IntToStr(tb.RecordCount);
     end;
-
 end;
-
-
 
 procedure TfmMain.btnAplicarClick(Sender: TObject);
 begin
-    if cbFormatos.ItemIndex = 0 then
-    begin
-        edFormato.Text := 'CODIGO|TEXTO|5,QTD|NUMERO|5,PRECO|NUMERO|7|2';
-        edDelim.Text := ';';
-        cbSepNum.Text := '.';
-    end
-    else if cbFormatos.ItemIndex = 1 then
-    begin
-        edFormato.Text := 'CODIGO|TEXTO|13,PRECO|NUMERO|10|2,QTD|NUMERO|10|2';
-        edDelim.Text := ';';
-        cbSepNum.Text := '.';
-    end;
+    edFormato.Text := TStringWrapper(cbFormatos.Items.Objects[cbFormatos.ItemIndex]).txt;
 end;
 
 procedure TfmMain.btnLerClick(Sender: TObject);
@@ -246,8 +238,55 @@ begin
 end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
+var
+    i: Integer;
+    str, fmt: string;
+    key, value: string;
+    sObj: TStringWrapper;
 begin
+    listFormatos := TStringList.Create();
+    if FileExists('coletorformatos.txt') then
+        listFormatos.LoadFromFile('coletorformatos.txt');
+    try
+        cbFormatos.Items.Clear();
+        for i := 0 to listFormatos.Count - 1 do
+        begin
+            key := '';
+            value := '';
+            str := listFormatos.Strings[i];
+            if Pos('=', str) > 0 then
+            begin
+                key := str.Split(['='])[0];
+                value := str.Split(['='])[1];
+            end;
+            if (key <> '') and (value <> '') then
+            begin
+                sObj := TStringWrapper.Create();
+                sObj.Txt := value;
+                cbFormatos.Items.AddObject(key, sObj);
+            end;
+        end;
+    except
+        cbFormatos.Items.Clear();
+    end;
+
     OpenDialog.InitialDir := ExtractFilePath(Application.ExeName);
+    chkWithHeader.Checked := (ReadCriptoConfig('withheader', 'false', 'coletor.cfg') = 'true');
+    edDelim.Text := ReadCriptoConfig('delim', ';', 'coletor.cfg');
+    edFormatDateTime.Text := ReadCriptoConfig('formatdatetime', 'DDMMYYYY', 'coletor.cfg');
+    cbFormatos.Text := ReadCriptoConfig('formatos', 'Elgin CD1002', 'coletor.cfg');
+    edFormato.Text := ReadCriptoConfig('formato', 'CODIGO|TEXTO|13,QTD|NUMERO|8,PRECO|NUMERO|10|3', 'coletor.cfg');
+end;
+
+procedure TfmMain.FormDestroy(Sender: TObject);
+begin
+    WriteCriptoConfig('withheader', iif(chkWithHeader.Checked, 'true', 'false'), 'coletor.cfg');
+    WriteCriptoConfig('delim', edDelim.Text, 'coletor.cfg');
+    WriteCriptoConfig('formatdatetime', edFormatDateTime.Text, 'coletor.cfg');
+    WriteCriptoConfig('formatos', cbFormatos.Text, 'coletor.cfg');
+    ReadCriptoConfig('formato', edFormato.Text, 'coletor.cfg');
+    inherited;
 end;
 
 end.
+

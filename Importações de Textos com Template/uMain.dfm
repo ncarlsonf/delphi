@@ -13,6 +13,7 @@ object fmMain: TfmMain
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object lbRegistrosLidos: TLabel
@@ -109,7 +110,7 @@ object fmMain: TfmMain
     end
     object chkWithHeader: TCheckBox
       Left = 12
-      Top = 12
+      Top = 13
       Width = 189
       Height = 17
       Caption = 'A primeira linha '#233' um cabe'#231'alho'
@@ -123,7 +124,7 @@ object fmMain: TfmMain
       TabOrder = 1
       Text = '#32'
     end
-    object Edit2: TEdit
+    object edFormatDateTime: TEdit
       Left = 8
       Top = 85
       Width = 97
@@ -176,9 +177,7 @@ object fmMain: TfmMain
       Width = 228
       Height = 22
       Style = csOwnerDrawFixed
-      ItemIndex = 0
       TabOrder = 5
-      Text = 'Elgin CD1002'
       Items.Strings = (
         'Elgin CD1002'
         'Bematech AT203')
