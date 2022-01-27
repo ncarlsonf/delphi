@@ -27,12 +27,12 @@ object fmMain: TfmMain
   end
   object Label2: TLabel
     Left = 0
-    Top = 373
+    Top = 303
     Width = 906
     Height = 17
     Align = alBottom
     Caption = 'Sa'#237'da:'
-    ExplicitTop = 292
+    ExplicitTop = 373
     ExplicitWidth = 35
   end
   object Label3: TLabel
@@ -44,12 +44,11 @@ object fmMain: TfmMain
     Caption = 
       'O uso de TBindingExpression no c'#243'digo abre a possibilidade de in' +
       'ferir transforma'#231#245'es e modificar c'#225'lculos em tempo de execu'#231#227'o'
-    ExplicitTop = 462
     ExplicitWidth = 772
   end
   object Splitter1: TSplitter
     Left = 0
-    Top = 332
+    Top = 262
     Width = 906
     Height = 3
     Cursor = crVSplit
@@ -61,7 +60,7 @@ object fmMain: TfmMain
     Left = 0
     Top = 17
     Width = 906
-    Height = 315
+    Height = 245
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -110,27 +109,27 @@ object fmMain: TfmMain
     ScrollBars = ssBoth
     TabOrder = 0
     WordWrap = False
-    ExplicitHeight = 234
+    ExplicitTop = 101
+    ExplicitHeight = 315
   end
   object MemoOut: TMemo
     Left = 0
-    Top = 390
+    Top = 320
     Width = 906
-    Height = 153
+    Height = 223
     Align = alBottom
     ScrollBars = ssBoth
     TabOrder = 1
-    ExplicitTop = 309
   end
   object Panel1: TPanel
     Left = 0
-    Top = 335
+    Top = 265
     Width = 906
     Height = 38
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 254
+    ExplicitTop = 335
     object Button1: TButton
       Left = 0
       Top = 4

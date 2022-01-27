@@ -428,6 +428,8 @@ begin
             begin
                 expr := MemoExpr.Lines.Strings[i];
                 expr := UpdBoolParts(expr);
+                expr := UpdFuncPart(expr, 'erase', 'fn.Erase');
+                expr := UpdFuncPart(expr, 'notepad', 'fn.Notepad');
                 expr := UpdFuncPart(expr, 'iif', 'fn.IIf');
                 expr := UpdFuncPart(expr, 'power', 'fn.Power');
                 expr := UpdFuncPart(expr, 'sqrt', 'fn.Sqrt');
