@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, JvMemoryDataset, Vcl.Grids,
-  Vcl.DBGrids, Vcl.StdCtrls;
+  Vcl.DBGrids, Vcl.StdCtrls, Vcl.ExtDlgs;
 
 type
   TfmMain = class(TForm)
@@ -16,7 +16,7 @@ type
     tbCODIGO: TStringField;
     tbPRECO: TFloatField;
     tbQTD: TFloatField;
-    btnLer: TButton;
+    btnLerEProcessar: TButton;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label5: TLabel;
@@ -30,13 +30,21 @@ type
     cbFormatos: TComboBox;
     Label4: TLabel;
     btnAplicar: TButton;
-    procedure btnLerClick(Sender: TObject);
+    opendialog: TOpenTextFileDialog;
+    btnLer: TButton;
+    btnProcessar: TButton;
+    lbRegistrosLidos: TLabel;
+    procedure btnLerEProcessarClick(Sender: TObject);
     procedure btnAplicarClick(Sender: TObject);
+    procedure btnLerClick(Sender: TObject);
+    procedure btnProcessarClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
     procedure LoadFormat();
+    procedure Process();
   end;
 
 var
@@ -109,24 +117,7 @@ begin
     end;
 end;
 
-
-procedure TfmMain.btnAplicarClick(Sender: TObject);
-begin
-    if cbFormatos.ItemIndex = 0 then
-    begin
-        edFormato.Text := 'CODIGO|TEXTO|5,QTD|NUMERO|5,PRECO|NUMERO|7|2';
-        edDelim.Text := ';';
-        cbSepNum.Text := '.';
-    end
-    else if cbFormatos.ItemIndex = 1 then
-    begin
-        edFormato.Text := 'CODIGO|TEXTO|13,PRECO|NUMERO|10|2,QTD|NUMERO|10|2';
-        edDelim.Text := ';';
-        cbSepNum.Text := '.';
-    end;
-end;
-
-procedure TfmMain.btnLerClick(Sender: TObject);
+procedure TfmMain.Process();
 var
     i, j, ini: Integer;
     txt, delim: String;
@@ -156,53 +147,107 @@ begin
     end
     else
         delim := Copy(delim, 1, 1);
-
-    for i := ini to memData.Lines.Count do
-    begin
-        txt := memData.Lines[i];
-        if Trim(txt) = '' then
-            Exit;
-        parts := txt.Split([delim]);
-        qtdParts := Length(parts);
-        if qtdParts <> qtdCampos then
+    try
+        for i := ini to memData.Lines.Count do
         begin
-            MessageDlg('Erro na linha ' + IntToStr(i) + #13 + txt, mtError, [mbOk], 0);
-            Exit;
-        end;
-        try
-            tb.Insert();
-            for j := Low(parts) to High(parts) do
+            txt := memData.Lines[i];
+            if Trim(txt) = '' then
+                Exit;
+            parts := txt.Split([delim]);
+            qtdParts := Length(parts);
+            if qtdParts <> qtdCampos then
             begin
-                if StrEqCi(campos[j].Tipo, 'TEXTO') then
-                begin
-                    txt := parts[j];
-                    if campos[j].Tamanho > 0 then
-                        txt := Copy(txt, 1, campos[j].Tamanho);
-                    tb.FieldByName(campos[j].Nome).Value := txt;
-                end
-                else if StrEqCi(campos[j].Tipo, 'NUMERO') then
-                begin
-                    if Pos(''+sepNum, parts[j]) > 0 then
-                    begin
-                        numero := parts[j].Split([sepNum])[0];
-                        decimal := parts[j].Split([sepNum])[1];
-                        if campos[j].Decimais > 0 then
-                            decimal := Copy(decimal, 1, campos[j].Decimais);
-                        valor := StrToFloat(numero + ',' + decimal);
-                    end
-                    else
-                    begin
-                        valor := StrToInt(parts[j]);
-                    end;
-                    tb.FieldByName(campos[j].Nome).Value := valor;
-                end;
+                MessageDlg('Erro na linha ' + IntToStr(i) + #13 + txt, mtError, [mbOk], 0);
+                Exit;
             end;
-            tb.Post();
-        except
-            tb.Cancel();
-        end;
+            try
+                tb.Append();
+                for j := Low(parts) to High(parts) do
+                begin
+                    if StrEqCi(campos[j].Tipo, 'TEXTO') then
+                    begin
+                        txt := parts[j];
+                        if campos[j].Tamanho > 0 then
+                            txt := Copy(txt, 1, campos[j].Tamanho);
+                        tb.FieldByName(campos[j].Nome).Value := txt;
+                    end
+                    else if StrEqCi(campos[j].Tipo, 'NUMERO') then
+                    begin
+                        if Pos(''+sepNum, parts[j]) > 0 then
+                        begin
+                            numero := parts[j].Split([sepNum])[0];
+                            decimal := parts[j].Split([sepNum])[1];
+                            if campos[j].Decimais > 0 then
+                                decimal := Copy(decimal, 1, campos[j].Decimais);
+                            valor := StrToFloat(numero + ',' + decimal);
+                        end
+                        else
+                        begin
+                            valor := StrToInt(parts[j]);
+                        end;
+                        tb.FieldByName(campos[j].Nome).Value := valor;
+                    end;
+                end;
+                tb.Post();
+            except
+                tb.Cancel();
+            end;
 
+        end;
+    finally
+        tb.First();
+        lbRegistrosLidos.Caption := 'Registros Lidos: ' + IntToStr(tb.RecordCount);
     end;
+
+end;
+
+
+
+procedure TfmMain.btnAplicarClick(Sender: TObject);
+begin
+    if cbFormatos.ItemIndex = 0 then
+    begin
+        edFormato.Text := 'CODIGO|TEXTO|5,QTD|NUMERO|5,PRECO|NUMERO|7|2';
+        edDelim.Text := ';';
+        cbSepNum.Text := '.';
+    end
+    else if cbFormatos.ItemIndex = 1 then
+    begin
+        edFormato.Text := 'CODIGO|TEXTO|13,PRECO|NUMERO|10|2,QTD|NUMERO|10|2';
+        edDelim.Text := ';';
+        cbSepNum.Text := '.';
+    end;
+end;
+
+procedure TfmMain.btnLerClick(Sender: TObject);
+begin
+    if not OpenDialog.Execute() then
+        Exit;
+    if not FileExists(OpenDialog.FileName) then
+        Exit;
+    memData.Clear();
+    memData.Lines.LoadFromFile(OpenDialog.FileName);
+end;
+
+procedure TfmMain.btnLerEProcessarClick(Sender: TObject);
+begin
+    if not OpenDialog.Execute() then
+        Exit;
+    if not FileExists(OpenDialog.FileName) then
+        Exit;
+    memData.Clear();
+    memData.Lines.LoadFromFile(OpenDialog.FileName);
+    Process();
+end;
+
+procedure TfmMain.btnProcessarClick(Sender: TObject);
+begin
+    Process();
+end;
+
+procedure TfmMain.FormCreate(Sender: TObject);
+begin
+    OpenDialog.InitialDir := ExtractFilePath(Application.ExeName);
 end;
 
 end.

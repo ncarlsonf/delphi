@@ -12,8 +12,16 @@ object fmMain: TfmMain
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object lbRegistrosLidos: TLabel
+    Left = 407
+    Top = 380
+    Width = 85
+    Height = 13
+    Caption = 'Registros Lidos: 0'
+  end
   object memData: TMemo
     Left = 8
     Top = 209
@@ -24,12 +32,10 @@ object fmMain: TfmMain
     Font.Height = -11
     Font.Name = 'Lucida Console'
     Font.Style = []
-    Lines.Strings = (
-      'c'#243'digo;quant;pre'#231'o'
-      '00011;003;0000287.639'
-      '00138;002;0000012.500')
     ParentFont = False
+    ScrollBars = ssVertical
     TabOrder = 0
+    WordWrap = False
   end
   object grid: TDBGrid
     Left = 407
@@ -44,14 +50,14 @@ object fmMain: TfmMain
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
   end
-  object btnLer: TButton
-    Left = 326
+  object btnLerEProcessar: TButton
+    Left = 184
     Top = 384
-    Width = 75
+    Width = 139
     Height = 25
-    Caption = 'Ler'
+    Caption = 'Ler Arquivo e Processar'
     TabOrder = 2
-    OnClick = btnLerClick
+    OnClick = btnLerEProcessarClick
   end
   object GroupBox1: TGroupBox
     Left = 8
@@ -107,8 +113,6 @@ object fmMain: TfmMain
       Width = 189
       Height = 17
       Caption = 'A primeira linha '#233' um cabe'#231'alho'
-      Checked = True
-      State = cbChecked
       TabOrder = 0
     end
     object edDelim: TEdit
@@ -117,7 +121,7 @@ object fmMain: TfmMain
       Width = 45
       Height = 21
       TabOrder = 1
-      Text = '#59'
+      Text = '#32'
     end
     object Edit2: TEdit
       Left = 8
@@ -132,21 +136,26 @@ object fmMain: TfmMain
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
-      Text = 'ddmmyyyy'
+      Text = 'DDMMYYYY'
     end
     object edFormato: TEdit
       Left = 8
       Top = 164
       Width = 373
       Height = 19
+      Hint = 
+        'Utilize os campos CODIGO, QTD e PRECO, no formato CAMPO|TIPO|TAM' +
+        'ANHO|DECIMAIS.  Os tipos v'#225'lidos s'#227'o TEXTO e NUMERO'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Lucida Console'
       Font.Style = []
       ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 3
-      Text = 'CODIGO|TEXTO|5,QTD|NUMERO|5,PRECO|NUMERO|7|2'
+      Text = 'CODIGO|TEXTO|13,QTD|NUMERO|8'
     end
     object cbSepNum: TComboBox
       Left = 144
@@ -184,6 +193,24 @@ object fmMain: TfmMain
       OnClick = btnAplicarClick
     end
   end
+  object btnLer: TButton
+    Left = 12
+    Top = 384
+    Width = 75
+    Height = 25
+    Caption = 'Ler Arquivo'
+    TabOrder = 4
+    OnClick = btnLerClick
+  end
+  object btnProcessar: TButton
+    Left = 100
+    Top = 384
+    Width = 75
+    Height = 25
+    Caption = 'Processar'
+    TabOrder = 5
+    OnClick = btnProcessarClick
+  end
   object ds: TDataSource
     DataSet = tb
     Left = 472
@@ -216,5 +243,9 @@ object fmMain: TfmMain
     object tbQTD: TFloatField
       FieldName = 'QTD'
     end
+  end
+  object opendialog: TOpenTextFileDialog
+    Left = 504
+    Top = 380
   end
 end
